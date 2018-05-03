@@ -1,16 +1,22 @@
 import {AxiosESTransport, ESTransport} from "../../../"
-import "jasmine-ajax"
+import axios from "axios"
+import * as sinon from "sinon"
 
 describe("AxiosESTransport", ()=> {
 
-  beforeEach(()=> {
-    jasmine.Ajax.install()
+  beforeEach(()=> {    
     this.host = "http://search:9200/"
+    this.server = sinon.fakeServer.create();
+    this.mockResults = { hits: [1, 2, 3] }
+    this.server.respondWith("POST", /search/,
+      [200, { "Content-Type": "application/json" },
+        JSON.stringify(this.mockResults)]);
+    this.server.autoRespond = true
     this.transport = new AxiosESTransport(this.host)
   })
 
   afterEach(()=> {
-    jasmine.Ajax.uninstall()
+    this.server.restore()
   })
 
   it("constructor()", ()=> {
@@ -19,7 +25,7 @@ describe("AxiosESTransport", ()=> {
     let axiosConfig = this.transport.axios.defaults
     expect(axiosConfig.baseURL).toBe(this.host)
     expect(axiosConfig.timeout).toBe(AxiosESTransport.timeout)
-    expect(axiosConfig.headers).toBe(this.transport.options.headers)
+    expect(axiosConfig.headers).toEqual(axios.defaults.headers)
     expect(this.transport instanceof ESTransport).toBe(true)
   })
 
@@ -29,38 +35,64 @@ describe("AxiosESTransport", ()=> {
         "Content-Type":"application/json",
       },
       basicAuth:"key:val",
-      searchUrlPath:"/_search/"
+      searchUrlPath:"/_search/",
+      timeout: 10000
     })
     expect(transport.options.headers).toEqual({
-      "Content-Type":"application/json",
-      "Authorization":"Basic " + btoa("key:val")
+      "Content-Type":"application/json"
     })
+    expect(transport.axios.defaults.auth.username).toBe("key")
+    expect(transport.axios.defaults.auth.password).toBe("val")
+    expect(transport.options.timeout).toEqual(10000)
     expect(transport.options.searchUrlPath).toBe("/_search/")
   })
 
-  it("search()", (done)=> {
-    let mockResults = {hits:[1,2,3]}
-    this.host = "http://search:9200/"
+  it("search()", async ()=> {    
     this.transport = new AxiosESTransport(this.host, {
       searchUrlPath:"/search"
     })
-    jasmine.Ajax.stubRequest(this.host + "search").andReturn({
-      "responseText": JSON.stringify(mockResults)
-    });
-    this.transport.search({
+    let result = await this.transport.search({
       size:10,
       from:0
-    }).then((result)=> {
-      expect(result.hits).toEqual([1,2,3])
-      let request = jasmine.Ajax.requests.mostRecent()
-      expect(request.method).toBe("POST")
-      expect(request["data"]()).toEqual(
-        {size:10, from:0})
-      done()
     })
+    expect(result).toEqual(this.mockResults)
+    let request = this.server.requests[0]
+    expect(request.method).toBe("POST")
+    expect(request.url).toEqual(this.host+"search")     
+    this.server.restore()   
   })
 
+  it("search - basicAuth", async ()=> {    
+    this.transport = new AxiosESTransport(this.host, {
+      searchUrlPath:"/search",
+      basicAuth: 'user:pass'
+    })
+    
+    let result = await this.transport.search({
+      size:10,
+      from:0
+    })
+    expect(result).toEqual(this.mockResults)
+    let request = this.server.requests[0]
+    expect(request.requestHeaders['Authorization'])
+      .toEqual("Basic " + btoa("user:pass"))
+  })
 
+  it("search - withCredentials", async ()=> {
+    document.cookie = axios.defaults.xsrfCookieName + '=12345';
+    this.transport = new AxiosESTransport(this.host, {
+      searchUrlPath:"/search",
+      withCredentials: true
+    })
+    
+    let result = await this.transport.search({
+      size:10,
+      from:0
+    })    
+    let request = this.server.requests[0]
+    expect(request.requestHeaders[axios.defaults.xsrfHeaderName]).toEqual('12345');
+      
+  })
 
   it("test timeout", ()=> {
     AxiosESTransport.timeout = 10

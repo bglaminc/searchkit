@@ -1,7 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
-const copyrightBanner = require("fs").readFileSync("./COPYRIGHT", "utf-8")
+const copyrightBanner = require("fs").readFileSync("../../COPYRIGHT", "utf-8")
 const autoprefixer = require('autoprefixer')
 
 module.exports = {
@@ -14,20 +14,21 @@ module.exports = {
     filename: '[name].js',
     library:["Searchkit"],
     libraryTarget:"umd",
-    publicPath: '',
-    css: 'theme.css'
+    publicPath: ''
   },
   resolve: {
-    extensions:[".js", ".ts", ".tsx","", ".webpack.js", ".web.js", ".scss"]
+    extensions:[".js", ".ts", ".tsx", ".webpack.js", ".web.js", ".scss"]
   },
-  postcss: function () {
-    return [autoprefixer]
-  },
+
   plugins: [
-    new webpack.BannerPlugin(copyrightBanner, {entryOnly:true}),
-    new webpack.optimize.DedupePlugin(),
-    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.BannerPlugin({banner:copyrightBanner, entryOnly:true}),
+    new webpack.optimize.OccurrenceOrderPlugin(),
     new ExtractTextPlugin("theme.css", {allChunks:true}),
+    new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify('production'),
+      },
+    }),
     new webpack.optimize.UglifyJsPlugin({
       mangle: {
         except: ['require', 'export', '$super']
@@ -46,19 +47,51 @@ module.exports = {
     })
   ],
   externals: {
-    "react": "React",
-    "react-dom":"ReactDOM"
+    'react': {
+      root: 'React',
+      commonjs2: 'react',
+      commonjs: 'react',
+      amd: 'react',
+      umd: 'react',
+    },
+    'react-dom': {
+      root: 'ReactDOM',
+      commonjs2: 'react-dom',
+      commonjs: 'react-dom',
+      amd: 'react-dom',
+      umd: 'react-dom',
+    }
   },
   module: {
     loaders: [
       {
         test: /\.tsx?$/,
-        loaders: ['ts'],
+        loaders: ['ts-loader'],
         include: [path.join(__dirname, 'src'),path.join(__dirname, 'theming')]
       },
       {
         test: /\.scss$/,
-        loader: ExtractTextPlugin.extract(require.resolve("style-loader"),require.resolve("css-loader")+"!"+require.resolve("postcss-loader")+"!"+require.resolve("sass-loader")),
+        loader: ExtractTextPlugin.extract({
+          fallback:"style-loader",
+          use:[
+            {
+              loader:"css-loader",
+              options: { 
+                sourceMap:true,
+                minimize:true,
+                importLoaders:2
+              }
+            },
+            {
+              loader:"postcss-loader"             
+            },
+            {
+              loader:"sass-loader", 
+              options:{sourceMap:true}
+            }
+          ]
+
+        }),          
         include: path.join(__dirname, 'theming')
       },
       {

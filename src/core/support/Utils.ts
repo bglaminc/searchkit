@@ -48,7 +48,7 @@ export class Utils {
     if(ob.key){
       return ob
     }
-    let fieldValues = reject(map(fields, (field)=> ob[field]), isUndefined)
+    let fieldValues = reject(map(fields, (field: string)=> ob[field]), isUndefined)
     if(fieldValues.length > 0){
       ob.key = fieldValues.join("_")
     } else {

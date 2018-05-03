@@ -1,9 +1,12 @@
 import * as React from "react";
 import {mount} from "enzyme";
 import {Hits} from "../src/Hits";
-import {SearchkitManager} from "../../../../core";
 import {
-  fastClick, hasClass, jsxToHTML, printPrettyHtml
+  SearchkitManager, PageSizeAccessor, HighlightAccessor, 
+  CustomHighlightAccessor, SourceFilterAccessor
+} from "../../../../core";
+import {
+  fastClick, hasClass, printPrettyHtml
 } from "../../../__test__/TestHelpers"
 import * as sinon from "sinon";
 
@@ -15,16 +18,19 @@ describe("Hits component", () => {
 
       this.searchkit = SearchkitManager.mock()
 
+      let customHighlight = { "fields": {} }
       this.wrapper = mount(
         <Hits searchkit={this.searchkit}
               hitsPerPage={10}
               highlightFields={["title"]}
+              customHighlight={customHighlight}
               sourceFilter={["title"]}/>
       )
 
-      this.pageSizeAccessor = this.searchkit.accessors.accessors[0]
-      this.highlightAccessor = this.searchkit.accessors.accessors[1]
-      this.sourceFilterAccessor = this.searchkit.accessors.accessors[2]
+      this.pageSizeAccessor = this.searchkit.getAccessorByType(PageSizeAccessor)
+      this.highlightAccessor = this.searchkit.getAccessorByType(HighlightAccessor)
+      this.customHighlightAccessor = this.searchkit.getAccessorByType(CustomHighlightAccessor)
+      this.sourceFilterAccessor = this.searchkit.getAccessorByType(SourceFilterAccessor)
 
       this.hasRendered = () => {
         return this.wrapper.find(".sk-hits").length == 1
@@ -34,6 +40,7 @@ describe("Hits component", () => {
 
     it("initalize accessors correctly", ()=> {
       expect(this.pageSizeAccessor.defaultSize).toBe(10)
+      expect(this.customHighlightAccessor.highlightRequest).toEqual({ "fields": {} })
       expect(this.highlightAccessor.highlightFields)
         .toEqual({
            fields: { title:{}}
@@ -51,12 +58,7 @@ describe("Hits component", () => {
       })
       this.wrapper.update()
       expect(this.hasRendered()).toBeTruthy()
-      expect(this.wrapper.html()).toEqual(jsxToHTML(
-        <div data-qa="hits" className="sk-hits">
-          <div data-qa="hit" className="sk-hits-hit sk-hits__item">1</div>
-          <div data-qa="hit" className="sk-hits-hit sk-hits__item">2</div>
-        </div>
-      ))
+      expect(this.wrapper).toMatchSnapshot()
     })
 
     it("does not render on no hits", () => {
@@ -91,12 +93,7 @@ describe("Hits component", () => {
       let wrapper = mount(
         <Hits searchkit={this.searchkit} itemComponent={hit} hitsPerPage={10}/>
       )
-      expect(wrapper.html()).toEqual(jsxToHTML(
-        <div data-qa="hits" className="sk-hits">
-          <div className="sk-hits-hit">1</div>
-          <div className="sk-hits-hit">2</div>
-        </div>
-      ))
+      expect(this.wrapper).toMatchSnapshot()
     })
   })
 

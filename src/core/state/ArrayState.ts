@@ -1,5 +1,5 @@
 import {State} from "./State"
-const contains = require("lodash/includes")
+const indexOf = require("lodash/indexOf")
 const without = require("lodash/without")
 
 export class ArrayState extends State<Array<string|number>> {
@@ -23,6 +23,6 @@ export class ArrayState extends State<Array<string|number>> {
     return this.create(this.getValue().concat(val))
   }
   contains(val) {
-    return contains(this.value, val)
+    return indexOf(this.value, val) !== -1
   }
 }

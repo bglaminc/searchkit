@@ -2,10 +2,10 @@ import {
   SearchkitComponent,
   SearchkitManager,
   Accessor,
-  ImmutableQuery
+  ImmutableQuery,
+  AccessorManager,
+  block
 } from "../../../"
-var block = require('bem-cn');
-
 
 describe("SearchkitComponent", ()=> {
 
@@ -13,25 +13,6 @@ describe("SearchkitComponent", ()=> {
     this.component = new SearchkitComponent({})
     this.component.props = {}
     this.component.context = {}
-  })
-
-  it("SearchkitComponent.translatePropType", ()=> {
-    let translations = {
-      continueButton:"Continue",
-      cancelButton:"Cancel"
-    }
-
-    let handler = SearchkitComponent
-      .translationsPropType(translations)
-
-    expect(handler(
-      {translations:{
-        continueButton:"Continue..."
-      }},
-      "translations", "MyComponent"
-    )).toEqual(null)
-
-
   })
 
   it("translate()", ()=> {
@@ -94,6 +75,7 @@ describe("SearchkitComponent", ()=> {
   it("componentWillMount()", ()=> {
     spyOn(this.component, "forceUpdate")
     let searchkit = SearchkitManager.mock()
+    searchkit.accessors = new AccessorManager()
     let accessor = new Accessor()
     this.component.defineAccessor = ()=> accessor
     spyOn(console, "warn")

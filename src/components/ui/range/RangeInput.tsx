@@ -2,11 +2,9 @@ import * as React from "react";
 
 import { RangeProps } from './RangeProps'
 
-const block = require('bem-cn')
+import {block} from "../../../core/react"
 
-const defaults = require("lodash/defaults")
-const get = require("lodash/get")
-const clamp = require("lodash/clamp")
+const omit = require("lodash/omit")
 
 /*
  * Input validates input and only calls onChange for valid values
@@ -49,7 +47,8 @@ export class NumberInput extends React.Component<any, any> {
   }
 
   render() {
-    return <input type="number" {...this.props} value = { this.state.value } onChange={this.onChange}/>
+    const rest = omit(this.props, ['field', 'onChange'])
+    return <input type="number" {...rest} value={this.state.value} onChange={this.onChange} />
   }
 }
 
@@ -68,18 +67,18 @@ export class RangeInput extends React.Component<RangeInputProps, {}> {
 
   static defaultProps = {
     mod: "sk-range-input",
-    translate: (str) => undefined,
+    translate: (_str) => undefined,
     minPlaceholder: 'min',
-    maxPlaceholder: 'max',
+    maxPlaceholder: 'max'
   }
 
   constructor(props) {
-    super(props);
+    super(props)
     // this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this)
   }
 
-  handleInputChange(value, key) {
+  handleInputChange(_value, _key) {
     // const { min, max, minValue, maxValue, onFinished } = this.props
     // const values = defaults({
     //   [key]: clamp(value, min, max)
@@ -98,7 +97,7 @@ export class RangeInput extends React.Component<RangeInputProps, {}> {
     const { mod, className, minValue, maxValue, translate, minPlaceholder, maxPlaceholder } = this.props
 
     const bemBlocks = {
-      container: block(mod)
+      container: block(mod).el
     }
 
     return (

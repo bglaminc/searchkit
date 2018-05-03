@@ -1,10 +1,12 @@
 import * as React from "react";
 import {mount} from "enzyme";
 import { InputFilter } from "./InputFilter";
-import { SearchkitManager, SimpleQueryString, QueryString } from "../../../../core";
-const bem = require("bem-cn");
+import { 
+  SearchkitManager, SimpleQueryString, QueryString, QueryAccessor
+} from "../../../../core";
+
 import {
-  fastClick, hasClass, jsxToHTML, printPrettyHtml
+  fastClick, hasClass, printPrettyHtml
 } from "../../../__test__/TestHelpers"
 
 import {
@@ -25,6 +27,7 @@ describe("InputFilter tests", () => {
     this.searchkit.translateFunction = (key)=> {
       return {
         "searchbox.placeholder":"search placeholder",
+        "searchbox.button":"submit"
       }[key]
     }
 
@@ -38,7 +41,7 @@ describe("InputFilter tests", () => {
                    prefixQueryFields={prefixQueryFields}
                    {...otherProps} />
       );
-      this.accessor = this.searchkit.accessors.getAccessors()[0]
+      this.accessor = this.searchkit.getAccessorByType(QueryAccessor)
     }
 
     this.setResults = ()=> {
@@ -68,6 +71,7 @@ describe("InputFilter tests", () => {
   it("render", () => {
     this.createWrapper()
     expect(this.wrapper.find(".sk-input-filter__text").get(0).placeholder).toBe("search placeholder")
+    expect(this.wrapper.find(".sk-input-filter__action").get(0).value).toBe("submit")
   })
 
   it("toggles visibility", () => {
@@ -92,21 +96,7 @@ describe("InputFilter tests", () => {
       mod: "my-input", className: "my-class"
     })
     this.setResults()
-    expect(this.wrapper.html()).toEqual(jsxToHTML(
-      <div className="sk-panel filter--test_id">
-        <div className="sk-panel__header">Test title</div>
-        <div className="sk-panel__content">
-          <div className="my-input">
-            <form>
-              <div className="my-input__icon" />
-              <input type="text" data-qa="input-filter" className="my-input__text" placeholder="search placeholder" value=""/>
-              <input type="submit" value="search" className="my-input__action" data-qa="submit" />
-              <div data-qa="remove" className="my-input__remove is-hidden"></div>
-            </form>
-          </div>
-        </div>
-      </div>
-    ))
+    expect(this.wrapper).toMatchSnapshot()
   })
 
   it("search on change", () => {
@@ -124,7 +114,6 @@ describe("InputFilter tests", () => {
   })
 
   it("search on change with clock", ()=> {
-    jasmine.clock().install()
     let queries = []
     this.searchkit.performSearch = ()=> {
       queries.push(this.searchkit.buildQuery())
@@ -132,16 +121,14 @@ describe("InputFilter tests", () => {
     this.createWrapper(true)
     expect(this.wrapper.node.props.searchThrottleTime).toBe(200)
     this.typeSearch("m")
-    jasmine.clock().tick(100)
+    this.wrapper.node.throttledSearch.flush()
     expect(queries.length).toBe(1)
     expect(queries[0].getSelectedFilters()[0].value).toBe("m")
     this.typeSearch("ma")
-    jasmine.clock().tick(100)
     expect(queries.length).toBe(1)
-    jasmine.clock().tick(300)
+    this.wrapper.node.throttledSearch.flush()
     expect(queries.length).toBe(2)
     expect(queries[1].getSelectedFilters()[0].value).toBe("ma")
-    jasmine.clock().uninstall()
   })
 
   it("search on submit", () => {

@@ -1,9 +1,9 @@
 import * as React from "react";
 import {mount} from "enzyme";
-import {DynamicRangeFilter} from "./DynamicRangeFilter.tsx";
-import {SearchkitManager} from "../../../../core";
+import {DynamicRangeFilter} from "./DynamicRangeFilter";
+import {SearchkitManager, DynamicRangeAccessor} from "../../../../core";
 import {
-  fastClick, hasClass, jsxToHTML, printPrettyHtml
+  fastClick, hasClass, printPrettyHtml
 } from "../../../__test__/TestHelpers"
 
 describe("Dynamic Range Filter tests", () => {
@@ -12,6 +12,7 @@ describe("Dynamic Range Filter tests", () => {
 
     this.searchkit = SearchkitManager.mock()
     spyOn(this.searchkit, "performSearch")
+    this.rangeFormatter = (count) => count + " score"
     this.createWrapper = () => {
       this.wrapper = mount(
         <DynamicRangeFilter
@@ -19,7 +20,8 @@ describe("Dynamic Range Filter tests", () => {
           searchkit={this.searchkit}
           field="metascore"
           title="metascore"
-          rangeFormatter={(count)=> count + " score"}
+          rangeFormatter={this.rangeFormatter}
+          translations = {{"range.divider":" TO "}}
         />
       );
 
@@ -38,29 +40,14 @@ describe("Dynamic Range Filter tests", () => {
       })
 
       this.wrapper.update()
-      this.accessor = this.searchkit.accessors.getAccessors()[0]
+      this.accessor = this.searchkit.getAccessorByType(DynamicRangeAccessor)
     }
 
   });
 
   it("renders correctly", () => {
     this.createWrapper()
-    expect(this.wrapper.html()).toBe(jsxToHTML(
-      <div className="sk-panel filter--m">
-        <div className="sk-panel__header">metascore</div>
-        <div className="sk-panel__content">
-          <div className="sk-range-slider">
-            <div className="rc-slider">
-              <div className="rc-slider-handle" style={{left:" 100%"}}></div>
-              <div className="rc-slider-handle" style={{left:" 0%"}}></div>
-              <div className="rc-slider-track" style={{visibility:" visible", " left":" 0%", " width":" 100%"}}></div>
-              <div className="rc-slider-step"><span className="rc-slider-dot rc-slider-dot-active" style={{left:"0%"}}></span><span className="rc-slider-dot rc-slider-dot-active" style={{left:"100%"}}></span></div>
-              <div className="rc-slider-mark"><span className="rc-slider-mark-text rc-slider-mark-text-active" style={{width:"90%",left:"-45%"}}>1 score</span><span className="rc-slider-mark-text rc-slider-mark-text-active" style={{width:"90%",left:"55%"}}>120 score</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    ))
+    expect(this.wrapper).toMatchSnapshot()
   })
 
   it("accessor has correct config", () => {
@@ -72,7 +59,9 @@ describe("Dynamic Range Filter tests", () => {
       fieldOptions:{
         type:"embedded",
         field:"metascore"
-      }
+      },
+      rangeFormatter:this.rangeFormatter,
+      translations:{"range.divider":" TO "}
     })
   })
 

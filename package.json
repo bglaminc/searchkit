@@ -1,8 +1,101 @@
 {
-  "name": "searchkit",
-  "version": "0.10.0",
-  "description": "A suite of react components to help create a UI quickly for elasticsearch ",
-  "main": "lib/src/index.js",
+  "_from": "searchkit@2.3.0",
+  "_id": "searchkit@2.3.0",
+  "_inBundle": false,
+  "_integrity": "sha512-DfAUxgVbj8CxQRvtzM2TwsYRWGmyjgO6ctEBuy9hJ2UoeMM6LVtpOuIX5JgD8mN5yyyVV6aASn3DDjBruIB3aw==",
+  "_location": "/searchkit",
+  "_phantomChildren": {
+    "follow-redirects": "1.4.1",
+    "is-buffer": "1.1.6"
+  },
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "searchkit@2.3.0",
+    "name": "searchkit",
+    "escapedName": "searchkit",
+    "rawSpec": "2.3.0",
+    "saveSpec": null,
+    "fetchSpec": "2.3.0"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/searchkit/-/searchkit-2.3.0.tgz",
+  "_shasum": "bef3e60f85fa1714df73e256693b0946539cc4fa",
+  "_spec": "searchkit@2.3.0",
+  "_where": "/home/junho/Dev/workspace/bglam/web2.0",
+  "authors": [
+    {
+      "name": "Joseph McElroy",
+      "email": "phoey1@gmail.com"
+    },
+    {
+      "name": "Siavash Etemadieh",
+      "email": "ssetem@gmail.com"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/searchkit/searchkit/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "Gregory Potdevin",
+      "email": "gregory.potdevin@gmail.com"
+    }
+  ],
+  "dependencies": {
+    "@types/history": "^4.6.0",
+    "@types/lodash": "^4.14.77",
+    "axios": "^0.16.2",
+    "history": "4.7.2",
+    "immutability-helper": "^2.4.0",
+    "lodash": "4.17.4",
+    "prop-types": "^15.5.8",
+    "qs": "6.4.0",
+    "rc-slider": "^8.3.1"
+  },
+  "deprecated": false,
+  "description": "A suite of react components to help create a UI quickly for elasticsearch",
+  "devDependencies": {
+    "@types/enzyme": "^2.8.11",
+    "@types/jest": "^21.1.2",
+    "@types/node": "^8.0.34",
+    "@types/react": "^15.0.0",
+    "@types/react-dom": "^15.0.0",
+    "@types/react-router": "^2.0.51",
+    "@types/sinon": "^1.16.34",
+    "@types/source-map": "^0.5.0",
+    "autoprefixer": "^6.3.3",
+    "coveralls": "^3.0.0",
+    "css-loader": "^0.28.7",
+    "enzyme": "2.9.1",
+    "es6-promise": "^4.1.1",
+    "extract-text-webpack-plugin": "^3.0.1",
+    "file-loader": "^1.1.5",
+    "html-webpack-plugin": "^2.9.0",
+    "imports-loader": "^0.7.1",
+    "jest": "^21.2.1",
+    "jest-junit-reporter": "^1.1.0",
+    "js-beautify": "^1.5.10",
+    "json-loader": "^0.5.7",
+    "node-sass": "^4.5.3",
+    "null-loader": "^0.1.1",
+    "postcss-loader": "^0.8.2",
+    "react": "^15.6.0",
+    "react-dom": "15.6.0",
+    "react-test-renderer": "^15.6.2",
+    "sass-loader": "^6.0.6",
+    "sinon": "^1.17.2",
+    "style-loader": "^0.19.0",
+    "ts-jest": "^21.1.2",
+    "ts-loader": "^2.3.7",
+    "typescript": "^2.5.3",
+    "webpack": "^3.6.0"
+  },
+  "homepage": "http://www.searchkit.co",
   "keywords": [
     "elasticsearch",
     "elastic search",
@@ -15,100 +108,27 @@
     "react components",
     "react-component"
   ],
-  "homepage": "http://www.searchkit.co",
-  "bugs": {
-    "url": "https://github.com/searchkit/searchkit/issues"
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "name": "searchkit",
+  "peerDependencies": {
+    "react": "^15.0.0-0 || ^16.0.0-0",
+    "react-dom": "^15.0.0-0 || ^16.0.0-0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/searchkit/searchkit.git"
+    "url": "git+https://github.com/searchkit/searchkit.git"
   },
-  "typings": "lib/src/index.d.ts",
   "scripts": {
-    "test": "./node_modules/.bin/karma start --single-run --reporters progress,junit,coverage",
-    "test:watch": "./node_modules/.bin/karma start karma.conf.js --auto-watch",
-    "build": "./node_modules/.bin/tsc; ./node_modules/.bin/webpack; rm release/ignore.js",
-    "build:watch": "./node_modules/.bin/tsc -w",
-    "prepublish": "rm -rf lib; rm -rf release; npm run-script build;",
-    "test:e2e": "./node_modules/.bin/protractor test/e2e/conf/protractor.conf.js",
-    "test:e2e-standalone": "./node_modules/.bin/protractor test/e2e/conf/protractor.standalone.conf.js",
-    "test:serve": "node test/e2e/server/start.js"
+    "build": "node ./scripts/writeVersion; tsc; webpack; rm release/ignore.js",
+    "build:watch": "tsc -w",
+    "prepublishOnly": "rm -rf lib; rm -rf release; npm run-script build;",
+    "test": "jest -c jest.json",
+    "test:ci": "TEST_REPORT_FILENAME=unit-results.xml jest -c jest.json --coverage --testResultsProcessor=jest-junit-reporter --forceExit --ci -w 2",
+    "test:coverage": "jest -c jest.json --coverage",
+    "test:watch": "jest -c jest.json --watch",
+    "writeVersion": "node ./scripts/writeVersion.js"
   },
-  "authors": [
-    {
-      "name": "Joseph McElroy",
-      "email": "phoey1@gmail.com"
-    },
-    {
-      "name": "Siavash Etemadieh",
-      "email": "ssetem@gmail.com"
-    }
-  ],
-  "contributors": [
-    {
-      "name": "Gregory Potdevin",
-      "email": "gregory.potdevin@gmail.com"
-    }
-  ],
-  "license": "Apache-2.0",
-  "dependencies": {
-    "axios": "^0.9.1",
-    "bem-cn": "^1.2.2",
-    "es6-promise": "^3.1.2",
-    "history": "^2.1.1",
-    "lodash": "^4.6.1",
-    "qs": "ssetem/qs",
-    "rc-slider": "^3.3.2",
-    "react": "^0.14.7",
-    "react-addons-update": "^0.14.7"
-  },
-  "devDependencies": {
-    "autoprefixer": "^6.3.3",
-    "chalk": "^1.1.1",
-    "css-loader": "^0.23.1",
-    "ejs": "^2.4.1",
-    "enzyme": "^2.0.0",
-    "express": "^4.13.4",
-    "extract-text-webpack-plugin": "^1.0.1",
-    "file-loader": "^0.8.5",
-    "html-webpack-plugin": "^2.9.0",
-    "imports-loader": "^0.6.5",
-    "istanbul": "^0.4.2",
-    "istanbul-instrumenter-loader": "^0.2.0",
-    "jasmine-ajax": "^3.2.0",
-    "jasmine-core": "^2.3.4",
-    "js-beautify": "^1.5.10",
-    "json-loader": "^0.5.4",
-    "karma": "^0.13.21",
-    "karma-coverage": "^0.5.4",
-    "karma-coveralls": "^1.1.2",
-    "karma-jasmine": "^0.3.6",
-    "karma-jasmine-diff-reporter": "^0.3.4",
-    "karma-junit-reporter": "^0.3.8",
-    "karma-phantomjs-launcher": "^1.0.0",
-    "karma-sourcemap-loader": "^0.3.6",
-    "karma-webpack": "^1.7.0",
-    "method-override": "^2.3.5",
-    "node-sass": "^3.4.2",
-    "node-static": "^0.7.7",
-    "null-loader": "^0.1.1",
-    "phantomjs-polyfill": "0.0.2",
-    "phantomjs-prebuilt": "^2.1.4",
-    "postcss-loader": "^0.8.2",
-    "protractor": "^3.2.1",
-    "react-addons-test-utils": "^0.14.6",
-    "react-dom": "^0.14.6",
-    "react-router": "^2.4.0",
-    "sass-loader": "^3.1.2",
-    "serve-favicon": "^2.3.0",
-    "sinon": "^1.17.2",
-    "style-loader": "^0.13.0",
-    "ts-loader": "^0.8.1",
-    "ts-node": "^0.5.5",
-    "typescript": "^1.8.7",
-    "webpack": "^1.12.14",
-    "webpack-config": "^4.0.0",
-    "webpack-hot-middleware": "^2.9.1",
-    "xenon": "^0.1.4"
-  }
+  "typings": "lib/index.d.ts",
+  "version": "2.3.0"
 }

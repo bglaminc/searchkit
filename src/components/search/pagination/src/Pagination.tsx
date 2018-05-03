@@ -1,27 +1,23 @@
 import * as React from "react";
+import * as PropTypes from "prop-types";
 
 import {
   SearchkitComponent,
   PaginationAccessor,
-  FastClick,
   SearchkitComponentProps,
-  PureRender,
-  RenderComponentType,
   RenderComponentPropType,
-  renderComponent
+  renderComponent,
+  block
 } from "../../../../core"
 
 import {
-  Toggle, ListProps, Select
+  Toggle, Select
 } from "../../../ui"
 
 const defaults = require("lodash/defaults")
 const get = require("lodash/get")
-const assign = require("lodash/assign")
-const map = require("lodash/map")
-const compact = require("lodash/compact")
 const isNaN = require("lodash/isNaN")
-const bem = require("bem-cn")
+
 
 import { Paginator } from "./PaginationUtils"
 
@@ -47,10 +43,10 @@ export class Pagination extends SearchkitComponent<PaginationProps, any> {
       Pagination.translations
     ),
     listComponent: RenderComponentPropType,
-    pageScope: React.PropTypes.number,
-    showNumbers:React.PropTypes.bool,
-    showText:React.PropTypes.bool,
-    showLast:React.PropTypes.bool,
+    pageScope: PropTypes.number,
+    showNumbers:PropTypes.bool,
+    showText:PropTypes.bool,
+    showLast:PropTypes.bool,
   }, SearchkitComponent.propTypes)
 
   static defaultProps = {
@@ -78,7 +74,7 @@ export class Pagination extends SearchkitComponent<PaginationProps, any> {
 
   getTotalPages():number {
     return Math.ceil(
-      get(this.getResults(), ".hits.total", 1)
+      get(this.getResults(), "hits.total", 1)
       /
       get(this.getQuery(), "query.size", 10)
     );
@@ -120,7 +116,7 @@ export class Pagination extends SearchkitComponent<PaginationProps, any> {
 
   render() {
     if (!this.hasHits()) return null;
-    const className = bem(this.props.mod).state({numbered:this.props.showNumbers})
+    const className = block(this.props.mod).state({numbered:this.props.showNumbers})
 
     const view = renderComponent(this.props.listComponent, {
       items: this.getPages(),

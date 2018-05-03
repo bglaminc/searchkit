@@ -3,18 +3,18 @@ import * as React from "react";
 import {FacetFilterProps, FacetFilterPropTypes} from "./FacetFilterProps"
 
 import {
-  FacetAccessor, SearchkitComponent, ISizeOption,
-  FastClick, renderComponent, FieldOptions
+  FacetAccessor, ISizeOption
 } from "../../../../core"
 
 import {
-   CheckboxItemList, Panel
-} from "../../../ui"
+  FastClick, renderComponent, SearchkitComponent
+} from "../../../../core/react"
 
-const defaults = require("lodash/defaults")
+import {CheckboxItemList, Panel} from "../../../ui"
+
 const identity = require("lodash/identity")
 
-export class FacetFilter<T extends FacetFilterProps> extends SearchkitComponent<T, any> {
+export class FacetFilter extends SearchkitComponent<FacetFilterProps, any> {
   accessor: FacetAccessor
 
   static propTypes = FacetFilterPropTypes
@@ -45,7 +45,7 @@ export class FacetFilter<T extends FacetFilterProps> extends SearchkitComponent<
   }
   defineAccessor() {
     return new FacetAccessor(
-      this.props.field, this.getAccessorOptions())
+      this.props.id, this.getAccessorOptions())
   }
 
   defineBEMBlocks() {

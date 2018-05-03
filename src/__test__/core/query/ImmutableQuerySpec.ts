@@ -6,11 +6,10 @@ import {
   TermsBucket,
   FilterBucket,
   SimpleQueryString,
-  SelectedFilter,
   Utils
 } from "../../../"
 
-const _ = require("lodash")
+import * as _ from "lodash"
 
 
 describe("ImmutableQuery", ()=> {
@@ -73,6 +72,40 @@ describe("ImmutableQuery", ()=> {
       .toBe(unchangedQuery)
   })
 
+  it("supports multiple queries added", ()=> {
+    let query = this.addQuery()
+    query = query.addQuery(BoolMust(TermQuery("active", true)))
+    query = query.addQuery(BoolMust([
+      TermQuery("published", true),
+      TermQuery("archived", false)
+    ]))
+    expect(query.query.query).toEqual({
+      "bool": {
+        "must": [
+          {
+            "simple_query_string": {
+              "query": "foo"
+            }
+          },
+          {
+            "term": {
+              "active": true
+            }
+          },
+          {
+            "term": {
+              "published": true
+            }
+          },
+          {
+            "term": {
+              "archived": false
+            }
+          }
+        ]
+      }})
+  })
+
   it("setQueryString()", ()=> {
     let query = this.query.setQueryString("foo")
     expect(query.index.queryString).toBe("foo")
@@ -85,11 +118,11 @@ describe("ImmutableQuery", ()=> {
 
   it("addAnonymousFilter()", ()=> {
     let mockId = "123"
-    let spy = spyOn(Utils, "guid").and.returnValue(mockId)
+    spyOn(Utils, "guid").and.returnValue(mockId)
     let filter = BoolShould([1])
     let query = this.query.addAnonymousFilter(filter)
 
-    expect(query.query.filter).toEqual(filter)
+    expect(query.query.post_filter).toEqual(filter)
     expect(query.index.filtersMap).toEqual({
       [mockId]:filter
     })
@@ -99,7 +132,7 @@ describe("ImmutableQuery", ()=> {
     let filter = BoolShould([1])
     let query = this.query.addFilter("someKey", filter)
 
-    expect(query.query.filter)
+    expect(query.query.post_filter)
       .toEqual(filter)
     expect(query.index.filtersMap).toEqual({
       someKey:filter
@@ -148,7 +181,7 @@ describe("ImmutableQuery", ()=> {
     let query = this.query.setAggs(genreAggs).setAggs(authorAggs)
     expect(query.query.aggs).toEqual({
       "genre_filter": {
-        "filter": {},
+        "filter": {"match_all": {}},
         "aggs": {
           "genre_terms": {
             "terms": {
@@ -158,7 +191,7 @@ describe("ImmutableQuery", ()=> {
         }
       },
       "author_filter": {
-        "filter": {},
+        "filter": {"match_all": {}},
         "aggs": {
           "author_terms": {
             "terms": {
@@ -258,7 +291,7 @@ describe("ImmutableQuery", ()=> {
           "query": "Hi"
         }
       },
-      "filter": {
+      "post_filter": {
         "term": {
           "genres": "comedy"
         }

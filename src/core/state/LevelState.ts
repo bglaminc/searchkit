@@ -1,10 +1,10 @@
 import {State} from "./State"
 const isArray = require("lodash/isArray")
-const contains = require("lodash/includes")
 const take = require("lodash/take")
 const size = require("lodash/size")
 const without = require("lodash/without")
-const update = require("react-addons-update")
+const indexOf = require("lodash/indexOf")
+const update = require("immutability-helper")
 
 export class LevelState extends State<Array<any>> {
   value:Array<any>
@@ -27,7 +27,7 @@ export class LevelState extends State<Array<any>> {
   }
 
   contains(level:number, val) {
-    return contains(this.getValue()[level], val)
+    return indexOf(this.getValue()[level], val) !== -1
   }
 
   clear(level:number=0) {

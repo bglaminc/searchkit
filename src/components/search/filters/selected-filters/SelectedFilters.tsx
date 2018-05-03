@@ -1,28 +1,25 @@
 import * as React from "react";
 
 import {
-	SearchkitManager,
 	SearchkitComponent,
-	FacetAccessor,
 	FastClick,
 	SearchkitComponentProps,
-	ReactComponentType,
-	PureRender
+	RenderComponentType,
+	renderComponent
 } from "../../../../core"
 
 const defaults = require("lodash/defaults")
 const size = require("lodash/size")
 const map = require("lodash/map")
 
-@PureRender
-export class FilterItem extends React.Component<FilterItemProps, any> {
+export class FilterItem extends React.PureComponent<FilterItemProps, any> {
 
 	render(){
 		let props = this.props
 		return (
 			<div className={props.bemBlocks.option()
 				.mix(props.bemBlocks.container("item"))
-				.mix(`selected-filter--${props.filterId}`)()}>
+				.mix(`selected-filter--${props.filterId}`)}>
 				<div className={props.bemBlocks.option("name")}>{props.labelKey}: {props.labelValue}</div>
 				<FastClick handler={props.removeFilter}>
 					<div className={props.bemBlocks.option("remove-action")}>x</div>
@@ -43,7 +40,7 @@ export interface FilterItemProps {
 }
 
 export interface SelectedFiltersProps extends SearchkitComponentProps {
-	itemComponent?:ReactComponentType<FilterItemProps>
+	itemComponent?: RenderComponentType<FilterItemProps>
 }
 
 export class SelectedFilters extends SearchkitComponent<SelectedFiltersProps, any> {
@@ -78,7 +75,7 @@ export class SelectedFilters extends SearchkitComponent<SelectedFiltersProps, an
 
 	renderFilter(filter) {
 
-		return React.createElement(this.props.itemComponent, {
+		return renderComponent(this.props.itemComponent, {
 			key:filter.name +'$$' + filter.value,
 			bemBlocks:this.bemBlocks,
 			filterId:filter.id,

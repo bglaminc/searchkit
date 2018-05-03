@@ -4,7 +4,6 @@ import {mount} from "enzyme";
 import { RangeSlider } from './RangeSlider'
 import { MockRange } from './MockRange'
 
-import {fastClick, hasClass, jsxToHTML, printPrettyHtml} from "../../__test__/TestHelpers"
 
 describe("RangeSlider", () => {
 
@@ -12,24 +11,8 @@ describe("RangeSlider", () => {
     this.wrapper = mount(
       <MockRange rangeComponent={RangeSlider}/>
     )
+    expect(this.wrapper).toMatchSnapshot()
 
-    expect(this.wrapper.html()).toEqual(jsxToHTML(
-      <div className="sk-range-slider">
-        <div className="rc-slider">
-          <div className="rc-slider-handle" style={{ left: "50%" }}></div>
-          <div className="rc-slider-handle" style={{ left: "20%" }}></div>
-          <div className="rc-slider-track" style={{ left: "20%", width: "30%", visibility: "visible" }}></div>
-          <div className="rc-slider-step">
-            <span className="rc-slider-dot" style={{ left: "0%" }}></span>
-            <span className="rc-slider-dot" style={{ left: "100%" }}></span>
-          </div>
-          <div className="rc-slider-mark">
-            <span className="rc-slider-mark-text" style={{ width: "90%", left: "-45%" }}>0</span>
-            <span className="rc-slider-mark-text" style={{ width: "90%", left: "55%" }}>10</span>
-          </div>
-        </div>
-      </div>
-    ))
   })
 
   it("mod + classname can be updated", () => {

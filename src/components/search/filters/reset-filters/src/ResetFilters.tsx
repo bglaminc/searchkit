@@ -1,15 +1,14 @@
 import * as React from "react";
+import * as PropTypes from "prop-types";
 
 import {
-	SearchkitManager,
 	SearchkitComponent,
-	FacetAccessor,
 	FastClick,
 	SearchkitComponentProps,
-	ReactComponentType,
-	PureRender,
+	RenderComponentType,
 	ResetSearchOptions,
-	ResetSearchAccessor
+	ResetSearchAccessor,
+  renderComponent
 } from "../../../../../core"
 const defaults = require("lodash/defaults")
 
@@ -22,10 +21,9 @@ export interface ResetFiltersDisplayProps {
 	translate:Function
 }
 
-@PureRender
-export class ResetFiltersDisplay extends React.Component<ResetFiltersDisplayProps, any>{
+export class ResetFiltersDisplay extends React.PureComponent<ResetFiltersDisplayProps, any>{
 	render(){
-		const {bemBlock, hasFilters, translate, resetFilters, clearAllLabel} = this.props
+		const { bemBlock, hasFilters, resetFilters, clearAllLabel } = this.props
 		return (
 			<div>
 				<FastClick handler={resetFilters}>
@@ -39,7 +37,7 @@ export class ResetFiltersDisplay extends React.Component<ResetFiltersDisplayProp
 }
 
 export interface ResetFiltersProps extends SearchkitComponentProps {
-	component?:ReactComponentType<ResetFiltersDisplayProps>,
+	component?: RenderComponentType<ResetFiltersDisplayProps>,
 	options?:ResetSearchOptions
 }
 
@@ -55,8 +53,8 @@ export class ResetFilters extends SearchkitComponent<ResetFiltersProps, any> {
 		translations:SearchkitComponent.translationsPropType(
 			ResetFilters.translations
 		),
-		component:React.PropTypes.func,
-		options:React.PropTypes.object
+		component:PropTypes.func,
+		options:PropTypes.object
 	}, SearchkitComponent.propTypes)
 
 	static defaultProps = {
@@ -91,6 +89,6 @@ export class ResetFilters extends SearchkitComponent<ResetFiltersProps, any> {
 			translate:this.translate,
 			clearAllLabel: this.translate("reset.clear_all")
 		}
-		return React.createElement(this.props.component, props)
+		return renderComponent(this.props.component, props)
   }
 }

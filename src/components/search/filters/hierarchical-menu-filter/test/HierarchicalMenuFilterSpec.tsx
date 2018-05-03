@@ -1,13 +1,13 @@
 import * as React from "react";
 import {mount} from "enzyme";
 import {HierarchicalMenuFilter} from "../src/HierarchicalMenuFilter";
-import {fastClick, hasClass, jsxToHTML, printPrettyHtml} from "../../../../__test__/TestHelpers"
-import {SearchkitManager} from "../../../../../core";
-const bem = require("bem-cn");
+import {fastClick, hasClass, printPrettyHtml} from "../../../../__test__/TestHelpers"
+import { SearchkitManager, HierarchicalFacetAccessor} from "../../../../../core";
+;
 import * as sinon from "sinon";
-const _ = require("lodash")
+import * as _ from "lodash"
 
-describe("MenuFilter tests", () => {
+describe("HierarchicalMenuFilter tests", () => {
 
   beforeEach(()=> {
     this.searchkit = SearchkitManager.mock()
@@ -19,7 +19,7 @@ describe("MenuFilter tests", () => {
         fields={["lvl1", "lvl2"]}
       />
     )
-    this.accessor = this.searchkit.accessors.accessors[0]
+    this.accessor = this.searchkit.getAccessorByType(HierarchicalFacetAccessor)
     this.setResults = ()=> {
       this.searchkit.setResults({
         aggregations:{
@@ -42,34 +42,14 @@ describe("MenuFilter tests", () => {
     expect(this.accessor.key).toBe("categories")
     expect(this.accessor.options).toEqual({
       id: 'categories', title: 'Categories',
-      fields: ['lvl1', 'lvl2'], size: 0,
+      fields: ['lvl1', 'lvl2'], size: 20,
       orderKey:"_term", orderDirection:"asc"
     })
   })
 
   it("should render first level correctly", ()=> {
     this.setResults()
-    expect(this.wrapper.html()).toEqual(jsxToHTML(
-      <div className="sk-hierarchical-menu-list filter--categories">
-        <div className="sk-hierarchical-menu-list__header">Categories</div>
-        <div className="sk-hierarchical-menu-list__root">
-          <div className="sk-hierarchical-menu-list__hierarchical-options">
-            <div>
-              <div className="sk-hierarchical-menu-option">
-                <div className="sk-hierarchical-menu-option__text">Red</div>
-                <div className="sk-hierarchical-menu-option__count">#10</div>
-              </div>
-            </div>
-            <div>
-              <div className="sk-hierarchical-menu-option">
-                <div className="sk-hierarchical-menu-option__text">Green</div>
-                <div className="sk-hierarchical-menu-option__count">#20</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    ))
+    expect(this.wrapper).toMatchSnapshot()    
   })
 
   it("should render 2nd level correctly with selected 3rd level", ()=> {
@@ -77,42 +57,7 @@ describe("MenuFilter tests", () => {
       ["Red"], ["Maroon"]
     ])
     this.setResults()
-    expect(this.wrapper.html()).toEqual(jsxToHTML(
-      <div className="sk-hierarchical-menu-list filter--categories">
-        <div className="sk-hierarchical-menu-list__header">Categories</div>
-        <div className="sk-hierarchical-menu-list__root">
-          <div className="sk-hierarchical-menu-list__hierarchical-options">
-            <div>
-              <div className="sk-hierarchical-menu-option is-selected">
-                <div className="sk-hierarchical-menu-option__text">Red</div>
-                <div className="sk-hierarchical-menu-option__count">#10</div>
-              </div>
-              <div className="sk-hierarchical-menu-list__hierarchical-options">
-                <div>
-                  <div className="sk-hierarchical-menu-option">
-                    <div className="sk-hierarchical-menu-option__text">Crimson</div>
-                    <div className="sk-hierarchical-menu-option__count">#10</div>
-                  </div>
-                </div>
-                <div>
-                  <div className="sk-hierarchical-menu-option is-selected">
-                    <div className="sk-hierarchical-menu-option__text">Maroon</div>
-                    <div className="sk-hierarchical-menu-option__count">#12</div>
-                  </div>
-                  <div className="sk-hierarchical-menu-list__hierarchical-options"></div>
-                </div>
-              </div>
-            </div>
-            <div>
-              <div className="sk-hierarchical-menu-option">
-                <div className="sk-hierarchical-menu-option__text">Green</div>
-                <div className="sk-hierarchical-menu-option__count">#20</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    ))
+    expect(this.wrapper).toMatchSnapshot()
   })
 
   it("should handle selecting an option", ()=> {

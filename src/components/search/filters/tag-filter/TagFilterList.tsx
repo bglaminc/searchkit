@@ -1,9 +1,7 @@
-import * as React from "react";
+import * as React from "react"
 
 import {
-  SearchkitComponent,
-  SearchkitComponentProps,
-  FastClick,
+  SearchkitComponentProps
 } from "../../../../core"
 
 import { TagFilter } from "./TagFilter"
@@ -20,7 +18,7 @@ export class TagFilterList extends React.Component<TagFilterListProps, any> {
 
   render() {
     const { field, values, searchkit } = this.props
-    
+
     return (
       <div className="sk-tag-filter-list">
         {map(values, value => <TagFilter key={value} field={field} value={value} searchkit={searchkit} />)}

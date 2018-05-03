@@ -1,20 +1,20 @@
 import * as React from "react";
 import {mount} from "enzyme";
 import {SelectedFilters, FilterItemProps} from "./SelectedFilters";
-import {SearchkitManager, ImmutableQuery, FastClick} from "../../../../core";
-const bem = require("bem-cn");
-const _ = require("lodash")
+import {SearchkitManager, ImmutableQuery, FastClick, block} from "../../../../core";
+
+import * as _ from "lodash"
 import * as sinon from "sinon";
 import {
-  fastClick, hasClass, jsxToHTML, printPrettyHtml
+  fastClick, hasClass, printPrettyHtml, htmlClean
 } from "../../../__test__/TestHelpers"
 
 describe("SelectedFilters tests", () => {
 
   beforeEach(() => {
 
-    this.bemContainer = bem("sk-selected-filters")
-    this.bemOption = bem("sk-selected-filters-option")
+    this.bemContainer = block("sk-selected-filters").el
+    this.bemOption = block("sk-selected-filters-option").el
 
     this.searchkit = SearchkitManager.mock()
 
@@ -55,18 +55,7 @@ describe("SelectedFilters tests", () => {
 
     this.createWrapper()
 
-    expect(this.wrapper.html()).toEqual(jsxToHTML(
-<div className="sk-selected-filters">
-  <div className="sk-selected-filters-option sk-selected-filters__item selected-filter--test">
-    <div className="sk-selected-filters-option__name"><span>test name</span><span>: </span><span>test value</span></div>
-    <div className="sk-selected-filters-option__remove-action">x</div>
-  </div>
-  <div className="sk-selected-filters-option sk-selected-filters__item selected-filter--test2">
-    <div className="sk-selected-filters-option__name"><span>test name 2 translated</span><span>: </span><span>test value 2 translated</span></div>
-    <div className="sk-selected-filters-option__remove-action">x</div>
-  </div>
-</div>
-    ))
+    expect(this.wrapper).toMatchSnapshot()
 
 
   });
@@ -91,18 +80,7 @@ describe("SelectedFilters tests", () => {
 
     this.createWrapper({itemComponent:FilterItem})
 
-    expect(this.wrapper.html()).toEqual(jsxToHTML(
-      <div className="sk-selected-filters">
-        <div className="sk-selected-filters-option">
-          <div className="sk-selected-filters-option__override-name">test value</div>
-          <div className="sk-selected-filters-option__remove-action">x</div>
-        </div>
-        <div className="sk-selected-filters-option">
-          <div className="sk-selected-filters-option__override-name">test value 2 translated</div>
-          <div className="sk-selected-filters-option__remove-action">x</div>
-        </div>
-      </div>
-    ))
+    expect(this.wrapper).toMatchSnapshot()
 
     // click element to be removed
 
@@ -111,9 +89,9 @@ describe("SelectedFilters tests", () => {
     expect(this.sinonSpy.called).toBeTruthy()
 
   })
-  
+
   it("handles duplicate values", () => {
-    
+
     this.searchkit.query = new ImmutableQuery()
       .addSelectedFilter({
         id:"test",
@@ -131,9 +109,9 @@ describe("SelectedFilters tests", () => {
         value:"test value",
         remove:_.identity
       })
-      
+
      this.createWrapper()
-     
+
      let elems = this.wrapper.find(".sk-selected-filters-option")
      expect(elems.length).toEqual(3)
   })

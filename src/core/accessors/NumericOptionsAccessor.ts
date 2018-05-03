@@ -1,8 +1,8 @@
-import {State, ArrayState} from "../state"
+import {ArrayState} from "../state"
 import {FilterBasedAccessor} from "./FilterBasedAccessor"
 import {Utils} from "../support"
 import {
-  RangeQuery, BoolShould, CardinalityMetric,
+  RangeQuery, BoolShould,
   RangeBucket, FilterBucket, SelectedFilter,
   FieldOptions, FieldContext, FieldContextFactory
 } from "../";
@@ -74,7 +74,7 @@ export class NumericOptionsAccessor extends FilterBasedAccessor<ArrayState> {
       this.toggleOption(titles[0])
     } else {
 
-      let keys = map(
+      let keys:any = map(
         filter(this.options.options, opt=> includes(titles, opt.title)),
         "key"
       )

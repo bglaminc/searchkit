@@ -1,10 +1,11 @@
 import * as React from "react";
+import * as PropTypes from "prop-types";
 
 import {
 	SearchkitComponent,
 	SearchkitComponentProps,
-	ReactComponentType,
-	PureRender
+	RenderComponentType,
+  renderComponent
 } from "../../../../core"
 
 const defaults = require("lodash/defaults")
@@ -13,8 +14,7 @@ export interface InitialViewDisplayProps {
 	bemBlocks:any
 }
 
-@PureRender
-export class  InitialViewDisplay extends React.Component<InitialViewDisplayProps, any>{
+export class InitialViewDisplay extends React.PureComponent<InitialViewDisplayProps, any>{
 	render(){
 		return (
 	 		<div className={this.props.bemBlocks.container()}>
@@ -26,7 +26,7 @@ export class  InitialViewDisplay extends React.Component<InitialViewDisplayProps
 
 
 export interface InitialLoaderprops extends SearchkitComponentProps{
-	component?:ReactComponentType<InitialViewDisplayProps>
+	component?: RenderComponentType<InitialViewDisplayProps>
 }
 
 export class InitialLoader extends SearchkitComponent<InitialLoaderprops, any> {
@@ -34,7 +34,7 @@ export class InitialLoader extends SearchkitComponent<InitialLoaderprops, any> {
 		component:InitialViewDisplay
 	}
 	static propTypes = defaults({
-		component:React.PropTypes.func
+		component:PropTypes.func
 	}, SearchkitComponent.propTypes)
 
 	defineBEMBlocks() {
@@ -45,7 +45,7 @@ export class InitialLoader extends SearchkitComponent<InitialLoaderprops, any> {
 	}
   render(){
     if(this.isInitialLoading()){
-      return React.createElement(this.props.component, {
+      return renderComponent(this.props.component, {
 				bemBlocks:this.bemBlocks
 			})
     }
