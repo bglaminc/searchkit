@@ -8,7 +8,7 @@ exports.decodeObjString = function (str) {
     return qs.parse(str);
 };
 exports.supportsHistory = function () {
-    return typeof window !== 'undefined' && !!window.history;
+    return !!window.history;
 };
 exports.createHistoryInstance = function () {
     return exports.supportsHistory() ? history_1.createBrowserHistory() : history_1.createMemoryHistory();

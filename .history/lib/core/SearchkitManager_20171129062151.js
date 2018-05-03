@@ -33,7 +33,7 @@ var SearchkitManager = /** @class */ (function () {
             searchOnLoad: true,
             defaultSize: 20,
             createHistory: history_1.createHistoryInstance,
-            getLocation: function () { return typeof window !== 'undefined' && window.location }
+            getLocation: function () { return window.location; }
         });
         this.host = host;
         this.guidGenerator = new support_1.GuidGenerator();

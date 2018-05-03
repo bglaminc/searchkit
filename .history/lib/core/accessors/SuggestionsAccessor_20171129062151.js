@@ -33,7 +33,7 @@ var SuggestionsAccessor = /** @class */ (function (_super) {
                         max_errors: 1,
                         gram_size: 4,
                         direct_generator: [{
-                                field: this.field,
+                                field: "_all",
                                 suggest_mode: "always",
                                 min_word_length: 1
                             }]

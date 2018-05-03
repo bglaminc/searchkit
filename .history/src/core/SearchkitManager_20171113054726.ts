@@ -76,7 +76,7 @@ export class SearchkitManager {
       searchOnLoad:true,
       defaultSize:20,
       createHistory:createHistoryInstance,
-      getLocation:()=> typeof window !== 'undefined' && window.location
+      getLocation:()=> window.location
     })
     this.host = host
     this.guidGenerator = new GuidGenerator()

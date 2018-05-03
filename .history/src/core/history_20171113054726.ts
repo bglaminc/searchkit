@@ -10,7 +10,7 @@ export const decodeObjString = (str) => {
 }
 
 export const supportsHistory = ()=> {
-  return typeof window !== 'undefined' && !!window.history
+  return !!window.history
 }
 
 export const createHistoryInstance = function():History{
